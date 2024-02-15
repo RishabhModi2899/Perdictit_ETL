@@ -8,7 +8,7 @@ from mwaa_cdk.mwaa_cdk_backend import MwaaCdkStackBackend
 from mwaa_cdk.mwaa_cdk_env import MwaaCdkStackEnv
 
 env_US = cdk.Environment(region="us-east-2", account="402440403671")
-mwaa_props = {'dagss3location': 'predictit-s3-bucket',
+mwaa_props = {'dagss3location': 'airflow-hybrid-demo',
               'mwaa_env': 'mwaa-hybrid-demo'}
 
 app = cdk.App()
