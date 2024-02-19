@@ -22,10 +22,11 @@ mwaa_hybrid_backend = MwaaCdkStackBackend(
 
 mwaa_hybrid_env = MwaaCdkStackEnv(
     scope=app,
-    id="mwaa-hybrid-environment",
+    id="mwaa-snowpipe-hybrid-environment",
     vpc=mwaa_hybrid_backend.vpc,
     env=env_US,
     mwaa_props=mwaa_props
 )
+
 
 app.synth()
