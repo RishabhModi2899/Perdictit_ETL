@@ -7,7 +7,7 @@ from aws_cdk import (
     aws_kms as kms,
     Stack,
     CfnOutput,
-    Tags
+    Tags,
 )
 from constructs import Construct
 
@@ -46,7 +46,7 @@ class MwaaCdkStackEnv(Stack):
                                   )
 
         dags_bucket_arn = dags_bucket.bucket_arn
-       
+
         mwaa_policy_document = iam.PolicyDocument(
             statements=[
                 iam.PolicyStatement(
@@ -281,7 +281,7 @@ class MwaaCdkStackEnv(Stack):
             id='airflow-test-environment',
             name=f"{mwaa_props['mwaa_env']}",
             airflow_configuration_options={'core.default_timezone': 'utc'},
-            airflow_version='2.0.2',
+            airflow_version='2.5.1',
             dag_s3_path="dags",
             environment_class='mw1.small',
             execution_role_arn=mwaa_service_role.role_arn,
@@ -308,3 +308,5 @@ class MwaaCdkStackEnv(Stack):
             value=security_group_id,
             description="Security Group name used by MWAA"
         )
+
+
