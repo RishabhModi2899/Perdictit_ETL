@@ -34,7 +34,8 @@ def json_scrapper(url, file_name, bucket):
 with DAG(
     "raw_predictit",
     default_args=default_args,
-    schedule_interval=datetime.timedelta(days=1),
+    # schedule_interval=datetime.timedelta(days=1),
+    schedule_interval="*/15 * * * *",
     start_date=start_date,
     catchup=False,
     tags=['sdg'],

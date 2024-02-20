@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
+from mwaa_cdk.mwaa_cdk_env import MwaaCdkStackEnv
+from mwaa_cdk.mwaa_cdk_backend import MwaaCdkStackBackend
 import os
+from dotenv import load_dotenv
 
 import aws_cdk as cdk
 
-# from aws_project_etl.aws_project_etl_stack import AwsProjectEtlStack
-from mwaa_cdk.mwaa_cdk_backend import MwaaCdkStackBackend
-from mwaa_cdk.mwaa_cdk_env import MwaaCdkStackEnv
+load_dotenv()
 
-env_US = cdk.Environment(region="us-east-2", account="402440403671")
-mwaa_props = {'dagss3location': 'predictit-s3-bucket',
-              'mwaa_env': 'mwaa-hybrid-demo'}
+# from aws_project_etl.aws_project_etl_stack import AwsProjectEtlStack
+
+env_US = cdk.Environment(region=os.getenv(
+    "region"), account=os.getenv("account"))
+mwaa_props = {'dagss3location': os.getenv("dagss3location"),
+              'mwaa_env': os.getenv("mwaa_env")}
 
 app = cdk.App()
 
@@ -22,7 +26,7 @@ mwaa_hybrid_backend = MwaaCdkStackBackend(
 
 mwaa_hybrid_env = MwaaCdkStackEnv(
     scope=app,
-    id="mwaa-snowpipe-hybrid-environment",
+    id="mwaa-hybrid-environment",
     vpc=mwaa_hybrid_backend.vpc,
     env=env_US,
     mwaa_props=mwaa_props

@@ -1,5 +1,4 @@
 from aws_cdk import (
-    Duration,
     aws_iam as iam,
     aws_ec2 as ec2,
     aws_s3 as s3,
@@ -9,8 +8,6 @@ from aws_cdk import (
     Stack,
     CfnOutput,
     Tags,
-    aws_sqs as sqs,
-    aws_s3_notifications as s3_notifications
 )
 from constructs import Construct
 
@@ -284,7 +281,7 @@ class MwaaCdkStackEnv(Stack):
             id='airflow-test-environment',
             name=f"{mwaa_props['mwaa_env']}",
             airflow_configuration_options={'core.default_timezone': 'utc'},
-            airflow_version='2.0.2',
+            airflow_version='2.5.1',
             dag_s3_path="dags",
             environment_class='mw1.small',
             execution_role_arn=mwaa_service_role.role_arn,
@@ -305,34 +302,11 @@ class MwaaCdkStackEnv(Stack):
             'Properties.AirflowConfigurationOptions', options)
         managed_airflow.add_override('Properties.Tags', tags)
 
-        # Create a event queue for JSON data
-        event_queue = sqs.Queue(
-            self, "EventQueue", visibility_timeout=Duration.seconds(300))
-
-        # Add an event notification to the bucket
-        dags_bucket.add_event_notification(
-            s3.EventType.OBJECT_CREATED_PUT, s3_notifications.SqsDestination(event_queue))
-
-        # IAM role for snowflake to access SQS
-        snowflake_access_role = iam.Role(
-            self, 'SnowflakeAccessRole', assumed_by=iam.ServicePrincipal('snowflake.amazonaws.com'))
-        event_queue.grant_consume_messages(snowflake_access_role)
-
-        # The policy statement for accessing the s3 bucket
-        s3_policy_statement = iam.PolicyStatement(actions=["s3:GetObject", "s3:ListBucket"], resources=[
-                                                  dags_bucket.bucket_arn, dags_bucket.arn_for_objects("*")])
-
-        # The policy statement for accessing the SQS queue
-        sqs_policy_statement = iam.PolicyStatement(
-            actions=["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"], resources=[event_queue.queue_arn])
-
-        # Adding policy statement to the role
-        snowflake_access_role.add_to_policy(s3_policy_statement)
-        snowflake_access_role.add_to_policy(sqs_policy_statement)
-
         CfnOutput(
             self,
             id="MWAASecurityGroup",
             value=security_group_id,
             description="Security Group name used by MWAA"
         )
+
+
